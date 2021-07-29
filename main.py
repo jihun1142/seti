@@ -26,7 +26,7 @@ from pathlib import Path
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--img', default=224, type=int, help='image size')
-parser.add_argument('--epochs', default=100, type=int, help='epochs')
+parser.add_argument('--epochs', default=10, type=int, help='epochs')
 args = parser.parse_args() #argparse를 쓰려면 위와 같은 코드가 기본적으로 필요함.
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -61,34 +61,20 @@ trainloader = torch.utils.data.DataLoader(
 
 testset = SETIdataset(df=test_df, path=path, transform=transform_test)
 testloader = torch.utils.data.DataLoader(
-    testset, batch_size=100, shuffle=False, num_workers=4) # 데이터를 불러옴.
+   testset, batch_size=100, shuffle=False, num_workers=4) # 데이터를 불러옴.
 
 
 # Model
 print('==> Building model..')
-# net = VGG('VGG19')
 net = timm.create_model('resnet50', pretrained=True, in_chans=1, num_classes=1)
-# net = PreActResNet18()
-# net = GoogLeNet()
-# net = DenseNet121()
-# net = ResNeXt29_2x64d()
-# net = MobileNet()
-# net = MobileNetV2()
-# net = DPN92()
-# net = ShuffleNetG2()
-# net = SENet18()
-# net = ShuffleNetV2(1)
-# net = EfficientNetB0()
-# net = RegNetX_200MF()
-# net = SimpleDLA()
 net = net.to(device) 
 if device == 'cuda':
-    net = torch.nn.DataParallel(net) # 
+    net = torch.nn.DataParallel(net) 
 
-criterion = nn.BCEWithLogitsLoss() # loss 함수 설정
+criterion = nn.BCEWithLogitsLoss() 
 optimizer = optim.SGD(net.parameters(), lr=args.lr,
-                      momentum=0.9, weight_decay=5e-4) # stochastic gradient descent 설정
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200) # learning rate scheduler
+                      momentum=0.5, weight_decay=5e-4) 
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200) 
 
 
 # Training
@@ -151,4 +137,4 @@ for epoch in range(start_epoch, start_epoch+args.epochs):
 
 
 print('Saving..')
-torch.save(net.state_dict(), './checkpoint/best_ckpt.pth')
+torch.save(net.state_dict(), './checkpoint/last_ckpt.pth')

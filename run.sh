@@ -1,1 +1,1 @@
-CUDA_VISIBLE_DEVICES=1 python main.py
+CUDA_VISIBLE_DEVICES=1 python3 load_model.py
