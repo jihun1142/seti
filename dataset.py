@@ -31,6 +31,9 @@ class SETIdataset(Dataset):
     def __len__(self):
         return len(self.df)
 
+    def get_labels(self):
+        return list(self.targets)
+
 if __name__ =="__main__":
     path = Path('/home/datasets/SETI/')
     csv_file = path.joinpath('train_labels.csv')

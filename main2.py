@@ -126,11 +126,11 @@ for train_idx, test_idx in skf.split(df, df.target):
 #train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
 trainset = SETIdataset(df=train_df, path=path, transform=transform_train)
 trainloader = torch.utils.data.DataLoader(
-    trainset, batch_size=128, sampler=ImbalancedDatasetSampler(trainset),shuffle=True, num_workers=4)
+    trainset, batch_size=128, sampler=ImbalancedDatasetSampler(trainset), num_workers=4)
 
 testset = SETIdataset(df=test_df, path=path, transform=transform_test)
 testloader = torch.utils.data.DataLoader(
-   testset, batch_size=128, sampler=ImbalancedDatasetSampler(testset),shuffle=False, num_workers=4) # 데이터를 불러옴.
+   testset, batch_size=128, shuffle=False, num_workers=4) # 데이터를 불러옴.
 
 
 # Model
@@ -145,8 +145,8 @@ optimizer = optim.AdamW(net.parameters(), lr=args.lr,
                             weight_decay=1e-4)
 #scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=16, eta_min=1.0e-7, last_epoch=-1, verbose=True)
 #scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[11,23], gamma=0.1)
-#scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=19, T_mult= 1, eta_min=1e-7, last_epoch=-1, verbose=True)
-scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=1e-3, pct_start=0.111, anneal_strategy='cos', div_factor=1.0e+2, final_div_factor=1)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=19, T_mult= 1, eta_min=1e-7, last_epoch=-1, verbose=True)
+# scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=1e-3, pct_start=0.111, anneal_strategy='cos', div_factor=1.0e+2, final_div_factor=1)
 
 current_time = datetime.now().strftime('%b%d_%H-%M-%S')
 log_dir = os.path.join(f'runs/{current_time}')
@@ -169,8 +169,6 @@ def train():
         train_loss += loss.item()
         all_targets.extend(targets.cpu().detach().numpy().astype(int).tolist())
         all_predictions.extend(outputs.sigmoid().cpu().detach().numpy().tolist())
-        print(all_targets)
-
 
         roc_auc = roc_auc_score(all_targets, all_predictions) 
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | score: %.3f '
@@ -207,7 +205,7 @@ def test():
     return test_loss/(batch_idx+1), roc_auc
 
 
-for epoch in range(start_epoch, start_epoch+args.epoch):
+for epoch in range(start_epoch, start_epoch+args.epochs):
     print('\n[Epoch: %d]'%epoch)
     train_loss,train_roc_auc=train()
     test_loss, test_roc_auc=test()
