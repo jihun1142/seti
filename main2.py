@@ -126,11 +126,11 @@ for train_idx, test_idx in skf.split(df, df.target):
 #train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
 trainset = SETIdataset(df=train_df, path=path, transform=transform_train)
 trainloader = torch.utils.data.DataLoader(
-    trainset, batch_size=128, sampler=ImbalancedDatasetSampler(trainset), num_workers=4)
+    trainset, sampler=ImbalancedDatasetSampler(trainset), batch_size=128, num_workers=4)
 
 testset = SETIdataset(df=test_df, path=path, transform=transform_test)
 testloader = torch.utils.data.DataLoader(
-   testset, batch_size=128, shuffle=False, num_workers=4) # 데이터를 불러옴.
+   testset, batch_size=128,shuffle=False, num_workers=4) # 데이터를 불러옴.
 
 
 # Model
