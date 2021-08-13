@@ -7,6 +7,7 @@ import timm
 
 from dataset_test import SETIdataset
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 
 def evaluate(data_loader):
@@ -19,7 +20,7 @@ def evaluate(data_loader):
         for batch_idx, (inputs, targets) in enumerate(data_loader):
             inputs = inputs.to(device)
             targets = targets.to(device)
-            
+
             output = model(inputs)
             
             targets = targets.detach().cpu().numpy().tolist()
@@ -50,9 +51,7 @@ test_loader = torch.utils.data.DataLoader(test_dataset,
 predictions, valid_targets = evaluate(test_loader)
 
 predictions = np.array(predictions)
-
 predictions = (predictions - predictions.min()) / (predictions.max() - predictions.min())
-
 submission.target = predictions
 
 submission.to_csv('submission.csv', index=False)

@@ -1,1 +1,1 @@
-CUDA_VISIBLE_DEVICES=1 python3 load_model.py
+CUDA_VISIBLE_DEVICES=1 python3 main.py --epochs 30
